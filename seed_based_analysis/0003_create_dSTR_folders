@@ -1,0 +1,132 @@
+#!/bin/bash
+
+
+# creating directories to save the input files for running PALM
+
+
+# you pass the Kevin dir parent
+# >>> ./0001_create_palm_folder.sh /Users/aeed/Documents/Work/Esmin_APP
+
+Usage() {
+    echo ""
+    echo "you pass the folder that contains bids dir"
+    echo ""
+    echo "Usage:"
+    echo ">>> ./0003_create_dSTR_folders.sh /Users/aeed/Documents/Work/M83_clearing/Manuscript_analysis"
+    echo ">>> ./0003_create_dSTR_folders.sh /srv/menon/Work/Brown_Vaccht"
+    echo ""
+    exit 1
+}
+
+[ "$1" = "" ] && Usage
+
+
+
+
+
+#if [ -d "${1}/dSTR_stats" ];then
+#        rm -Rf "${1}/dSTR_stats";
+#fi
+
+
+
+mkdir -p ${1}/STRd_seed_based_analysis/dSTR_gp_analysis/dSTR_stats/
+mkdir -p ${1}/STRd_seed_based_analysis/dSTR_gp_analysis/dSTR_stats/ses-01/
+#mkdir -p ${1}/STRd_seed_based_analysis/dSTR_gp_analysis/dSTR_stats/neighbor_all/subtraction/
+
+original_dir="${1}/STRd_seed_based_analysis"
+
+    PBS=('sub-hM835603942971011M8'
+        'sub-hM8362824086011084M8'
+        'sub-hM836223979691084M1'
+        'sub-hM8362224086051084M2'
+        'sub-hM8362234086021084M3')
+
+
+    PFF=('sub-hM8362334086041083M6'
+        'sub-hM836323993941035M4'
+        'sub-hM8363224086001085M5'
+        'sub-hM836373993921113M9'
+        'sub-hM8362324086031084M5')
+
+
+for subject in "${PBS[@]}";do
+  subject=$(basename $subject)
+  for ses in {"ses-01",};do
+      imcp ${original_dir}/dSTR_average_outputdir/average_dSTR_map_in_temp/${ses}_${subject}/average_dSTR.nii.gz \
+  ${original_dir}/dSTR_gp_analysis/dSTR_stats/${ses}/PBS_${subject}_${ses}_avg.nii.gz
+
+
+  done
+done
+
+
+for subject in "${PFF[@]}";do
+  subject=$(basename $subject)
+  for ses in {"ses-01",};do
+
+      imcp ${original_dir}/dSTR_average_outputdir/average_dSTR_map_in_temp/${ses}_${subject}/average_dSTR.nii.gz \
+  ${original_dir}/dSTR_gp_analysis/dSTR_stats/${ses}/PFF_${subject}_${ses}_avg.nii.gz
+
+
+  done
+done
+
+# merge each session separately
+
+# ===========================================================
+# combine PBS first
+fslmerge -t ${original_dir}/dSTR_gp_analysis/dSTR_stats/ses-01/PBS_ses-01_all_subjects.nii.gz  \
+${original_dir}/dSTR_gp_analysis/dSTR_stats/ses-01/PBS_*.nii.gz
+# average PBS
+fslmaths ${original_dir}/dSTR_gp_analysis/dSTR_stats/ses-01/PBS_ses-01_all_subjects.nii.gz -Tmean ${original_dir}/dSTR_gp_analysis/dSTR_stats/ses-01/PBS_ses-01_average.nii.gz
+
+# combine PFF
+fslmerge -t ${original_dir}/dSTR_gp_analysis/dSTR_stats/ses-01/PFF_ses-01_all_subjects.nii.gz  \
+${original_dir}/dSTR_gp_analysis/dSTR_stats/ses-01/PFF_*.nii.gz
+# average PFF
+fslmaths ${original_dir}/dSTR_gp_analysis/dSTR_stats/ses-01/PFF_ses-01_all_subjects.nii.gz -Tmean ${original_dir}/dSTR_gp_analysis/dSTR_stats/ses-01/PFF_ses-01_average.nii.gz
+
+# ==========================================================
+# merge both sessions
+fslmerge -t ${original_dir}/dSTR_gp_analysis/dSTR_stats/PBS_PFF_all_subjects_ses-01.nii.gz \
+${original_dir}/dSTR_gp_analysis/dSTR_stats/ses-01/PBS_ses-01_all_subjects.nii.gz \
+${original_dir}/dSTR_gp_analysis/dSTR_stats/ses-01/PFF_ses-01_all_subjects.nii.gz
+
+
+
+# take the average of both groups
+fslmaths ${original_dir}/dSTR_gp_analysis/dSTR_stats/PBS_PFF_all_subjects_ses-01.nii.gz -Tmean ${original_dir}/dSTR_gp_analysis/dSTR_stats/PBS_PFF_average_ses-01.nii.gz
+
+design="${original_dir}/dSTR_gp_analysis/dSTR_stats/stats.mat"
+contrast="${original_dir}/dSTR_gp_analysis/dSTR_stats/stats.con"
+M83_mask="/Users/aeed/Documents/Work/RABIES_templates/DSURQE_40micron_mask_M83.nii.gz"
+
+
+palm \
+  -i ${original_dir}/dSTR_gp_analysis/dSTR_stats/PBS_PFF_all_subjects_ses-01.nii.gz \
+  -o ${original_dir}/dSTR_gp_analysis/dSTR_stats/PBS_PFF_all_subjects_ses-01_palm \
+  -m $M83_mask   \
+  -d $design \
+  -t $contrast \
+  -T -fdr -n 10000 -noniiclass  -save1-p -ee -ise  -C 2.1
+
+
+source /Users/aeed/Dropbox/SCRIPTS/ABA2DSURQE/DSURQE2ABA_via_resampled.sh \
+  ${original_dir}/dSTR_gp_analysis/dSTR_stats/ses-01/PBS_ses-01_average.nii.gz \
+  /Users/aeed/Documents/Work/Allen_Brain_Atlas/CCF_v3/average_template_100.nii.gz \
+  ${original_dir}/dSTR_gp_analysis/dSTR_stats/ses-01/PBS_ses-01_average_ABA.nii.gz
+
+
+source /Users/aeed/Dropbox/SCRIPTS/ABA2DSURQE/DSURQE2ABA_via_resampled.sh \
+  ${original_dir}/dSTR_gp_analysis/dSTR_stats/ses-01/PFF_ses-01_average.nii.gz \
+  /Users/aeed/Documents/Work/Allen_Brain_Atlas/CCF_v3/average_template_100.nii.gz \
+  ${original_dir}/dSTR_gp_analysis/dSTR_stats/ses-01/PFF_ses-01_average_ABA.nii.gz
+
+
+
+source /Users/aeed/Dropbox/SCRIPTS/ABA2DSURQE/DSURQE2ABA_via_resampled.sh \
+  ${original_dir}/dSTR_gp_analysis/dSTR_stats/PBS_PFF_all_subjects_ses-01_palm_tfce_tstat_uncp_c1.nii.gz \
+  /Users/aeed/Documents/Work/Allen_Brain_Atlas/CCF_v3/average_template_100.nii.gz \
+  ${original_dir}/dSTR_gp_analysis/dSTR_stats/PBS_PFF_all_subjects_ses-01_palm_tfce_tstat_uncp_c1_ABA.nii.gz
+
