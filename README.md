@@ -17,7 +17,8 @@ This repository contains the complete analysis code for the manuscript investiga
   - [6. Motor Cortex Analysis](#6-motor-cortex-analysis)
   - [7. Light-Sheet Fluorescence Microscopy (LSFM)](#7-light-sheet-fluorescence-microscopy-lsfm)
   - [8. Spinal Cord Analysis](#8-spinal-cord-analysis)
-  - [9. Structure–Function Correlations](#9-structurefunction-correlations)
+  - [9. Structural Connectivity](#9-structural-connectivity)
+  - [10. Structure–Function Correlations](#10-structurefunction-correlations)
 - [Dependencies](#dependencies)
 - [Data Requirements](#data-requirements)
 - [Execution Environment](#execution-environment)
@@ -108,6 +109,12 @@ MRI-LSFM-Synuclein-manuscript/
 │   ├── 0005_calculate_field_fraction_pipeline.sh
 │   ├── calculate_field_fraction.py
 │   └── straighten_SC.py
+│
+├── strucural-connectivity/        # Allen Brain Atlas structural connectivity
+│   ├── 0001_getting_viral_tracing_maps.ipynb
+│   ├── 0002_get_projection_mats.ipynb
+│   ├── coordinates.txt
+│   └── extract_parcel_stats.py
 │
 ├── stru-func_correlations/        # Structure–function correlation analysis
 │   ├── 0001_create_dirs_process_metrics.ipynb
@@ -213,7 +220,17 @@ Quantification of alpha-synuclein pathology in the spinal cord (using SPIMprep a
 3. Regional quantification using atlas-based segmentation
 4. **Field-fraction calculation** — proportion of tissue positive for alpha-synuclein signal within each spinal cord region, computed using [ZarrNii](https://github.com/khanlab/zarrnii) for atlas-based aggregation
 
-### 9. Structure–Function Correlations
+### 9. Structural Connectivity
+
+**Directory:** `strucural-connectivity/`
+
+Anatomical connectivity data derived from the [Allen Mouse Brain Connectivity Atlas](https://connectivity.brain-map.org/) viral tracing experiments:
+
+1. **Viral tracing map retrieval** — download and process projection density maps from experiments with injection sites in the caudate putamen (dorsal striatum), selected based on injection coordinates; maps are downloaded via the Allen Brain Atlas grid data API and registered to the study template space
+2. **Projection matrix construction** — build region-to-region structural connectivity matrices using the 51-ROI bilateral Allen Brain Atlas parcellation, quantifying projection strength across brain regions
+3. **Parcel statistics extraction** — compute per-region summary statistics (mean, median, etc.) from voxel-wise projection maps using atlas-based parcellation (`extract_parcel_stats.py`)
+
+### 10. Structure–Function Correlations
 
 **Directory:** `stru-func_correlations/`
 
