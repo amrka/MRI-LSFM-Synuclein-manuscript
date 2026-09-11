@@ -1,0 +1,27 @@
+Group 1 — AP 0.14, ML 1.75, DV 2.53 (7 experiments, closest to your site):
+	• 127140981 ← your selected representative => 0.16 Bregma(0.14, 1.75, 2.53, 0)
+	• 278434443 => 0.06   Bregma(0.14, 1.75, 2.53, 0)
+	• 308395312 => 0.01  Bregma(0.14, 1.75, 2.53, 0)
+	• 100142580 => 0.11 Bregma(0.14, 1.75, 2.53, 0)
+	• 112458831 =>  0.11 - Bregma(0.14, 1.75, 2.53, 0)
+	• 301620241 => 0.05 - Bregma(0.14, 1.75, 2.53, 0)
+	• 307910595 => 0.03 - Bregma(0.14, 1.75, 2.53, 0)
+Group 2 — AP 0.98, ML 0.95, DV 2.12 (7 experiments, too medial — excluded):
+	• 127224133
+	• 155737254
+	• 146553266
+	• 310175667
+	• 159223001
+	• 124059700
+	• 292959343
+Group 3 — AP -0.70, ML 2.17, DV 1.92 (2 experiments):
+	• 127762867 ← your selected representative => 0.17
+	• 293366741 => 0.1
+Group 4 — AP -0.70, ML 2.70, DV 2.39 (2 experiments, too lateral — excluded):
+	• 159941339
+	• 156670520
+Single experiments (no duplicates):
+	• 158019342 — AP 0.96, ML 1.90, DV 1.95 ← your selected => 0.18
+	• 158916311 — AP 0.98, ML 1.90, DV 2.10 ← your selected => 0.22
+	• 161176690 — AP 0.38, ML 2.80, DV 2.76 ← excluded (too lateral)
+160537796 — AP 0.98, ML 1.05, DV 3.12 ← excluded (too deep)
